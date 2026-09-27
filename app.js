@@ -268,11 +268,12 @@
       b.setAttribute("data-color", String(c.id));
       b.disabled = state.busy;
       b.addEventListener("click", function () {
-        var filledIndex = state.selected;
-        state.input[filledIndex] = c.id;
+        var target = state.input.indexOf(null);
+        if (target === -1) target = state.selected;
+        state.input[target] = c.id;
         var next = state.input.indexOf(null);
-        state.selected = next === -1 ? state.selected : next;
-        pop(filledIndex);
+        state.selected = next === -1 ? target : next;
+        pop(target);
         render();
       });
       palette.appendChild(b);

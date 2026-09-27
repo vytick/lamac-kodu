@@ -88,11 +88,9 @@ button { font-family: inherit; }
   border: 3px solid var(--chalk-line);
   border-radius: 15px 7px 16px 8px / 8px 16px 7px 15px;
   background: rgba(255, 255, 255, 0.03);
-  animation: pop .18s ease;
 }
 @keyframes pop { from { transform: scale(.96); opacity: .3; } to { transform: scale(1); opacity: 1; } }
-.row.current { background: rgba(255, 224, 102, 0.08); border-style: dashed; animation: wiggle .55s ease; }
-@keyframes wiggle { 0% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } 100% { transform: rotate(0); } }
+.row.current { background: rgba(255, 224, 102, 0.08); border-style: dashed; }
 .row.won { background: rgba(52, 211, 153, 0.16); }
 .row.lost { background: rgba(255, 107, 127, 0.14); }
 @keyframes pop-in {
