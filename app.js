@@ -19,7 +19,7 @@
     secret: [],
     guesses: [],
     input: [],
-    selected: 0,
+    selected: -1,
     status: "playing",
     celebrated: false,
     lastGuessCount: 0,
@@ -267,11 +267,15 @@
       b.setAttribute("data-color", String(c.id));
       b.disabled = state.busy;
       b.addEventListener("click", function () {
-        var empty = state.input.indexOf(null);
-        var target = empty !== -1 ? empty : state.selected;
-        state.input[target] = c.id;
-        var next = state.input.indexOf(null);
-        state.selected = next === -1 ? target : next;
+        var target = state.input.indexOf(null);
+        if (target === -1) {
+          if (state.selected === -1) return;
+          target = state.selected;
+          state.input[target] = c.id;
+        } else {
+          state.input[target] = c.id;
+          state.selected = state.input.indexOf(null);
+        }
         pop(target);
         render();
       });
@@ -293,7 +297,7 @@
     reset.disabled = state.busy;
     reset.addEventListener("click", function () {
       state.input = emptyInput();
-      state.selected = 0;
+      state.selected = -1;
       render();
     });
     actions.appendChild(reset);
@@ -409,7 +413,7 @@
   function commitGuess(guess, feedback) {
     state.guesses.push({ guess: guess, whites: feedback.whites, blacks: feedback.blacks });
     state.input = emptyInput();
-    state.selected = 0;
+    state.selected = -1;
     if (feedback.whites === CODE_LENGTH) {
       state.status = "won";
       state.played++;
@@ -439,7 +443,7 @@
     state.secret = generateSecret();
     state.guesses = [];
     state.input = emptyInput();
-    state.selected = 0;
+    state.selected = -1;
     state.status = "playing";
     state.celebrated = false;
     state.lastGuessCount = 0;
