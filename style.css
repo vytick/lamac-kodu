@@ -216,3 +216,27 @@ button { font-family: inherit; }
 .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 60; }
 .confetti i { position: absolute; top: -14px; width: 10px; height: 14px; border-radius: 3px; animation: fall linear forwards; }
 @keyframes fall { to { transform: translateY(112vh) rotate(720deg); opacity: .85; } }
+
+@media (max-width: 480px) {
+  :root {
+    --chalk-line: rgba(245, 247, 239, 0.7);
+    --chalk-dash: rgba(245, 247, 239, 0.26);
+  }
+  body::after { border-width: 9px; }
+  .topbar { padding: 18px 14px 10px; }
+  .screen { padding: 12px 14px 40px; }
+  .status-pill { border-width: 2px; padding: 10px 14px; font-size: 15px; }
+  .row { border-width: 2px; padding: 6px 8px; }
+  .row.current .slot { width: 36px; height: 36px; }
+  .slot { border-width: 2px; border-color: var(--chalk-dash); }
+  .row.current .slot { border-color: var(--chalk-2); }
+  .fb-peg { border-width: 1.5px; }
+  .fb-empty { border-width: 1.5px; border-color: var(--chalk-dash); }
+  .eval-card { border-width: 2px; }
+  .swatch { border-width: 2px; width: 46px; height: 46px; }
+  .btn { border-width: 2px; padding: 11px 16px; font-size: 16px; }
+  .legend i { border-width: 1.5px; }
+  .eval-counts .eval-count::before { border-width: 1.5px; }
+  .toast { border-width: 2px; }
+  .brand .logo i { border-width: 1.5px; }
+}
