@@ -409,7 +409,7 @@
         overlay.remove();
         done();
       }, 200);
-    }, 3000);
+    }, 5000);
   }
 
   function commitGuess(guess, feedback) {
