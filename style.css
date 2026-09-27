@@ -121,6 +121,43 @@ button { font-family: inherit; }
 .fb-peg.black { background: #16231d; }
 .fb-empty { width: 14px; height: 14px; border-radius: 50%; border: 2px dashed var(--chalk-3); }
 
+.overlay {
+  position: fixed; inset: 0; z-index: 70;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: rgba(8, 14, 11, 0.72);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  animation: fade-in .18s ease;
+}
+.overlay.closing { animation: fade-out .2s ease forwards; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { to { opacity: 0; } }
+.eval-card {
+  background: var(--board);
+  border: 3px solid var(--chalk);
+  border-radius: 20px 9px 22px 10px / 10px 22px 9px 20px;
+  padding: 22px 26px 20px;
+  text-align: center;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), 0 16px 50px rgba(0, 0, 0, 0.55);
+  animation: pop-in .22s ease-out;
+}
+.eval-title { font-size: 19px; margin-bottom: 16px; color: var(--chalk); }
+.eval-slots { justify-content: center; gap: 9px; margin-bottom: 18px; }
+.eval-slots .slot { width: 42px; height: 42px; }
+.eval-fb { display: flex; gap: 9px; justify-content: center; min-height: 22px; }
+.eval-fb .fb-peg {
+  width: 22px; height: 22px;
+  opacity: 0; transform: scale(0);
+  transition: opacity .2s ease, transform .2s cubic-bezier(.2, .9, .3, 1.4);
+}
+.eval-fb .fb-peg.shown { opacity: 1; transform: scale(1); }
+.eval-none { font-size: 14px; color: var(--chalk-2); }
+.eval-counts {
+  margin-top: 16px; font-size: 13.5px; color: var(--chalk-2);
+  opacity: 0; transition: opacity .25s ease;
+}
+.eval-counts.shown { opacity: 1; }
+
 .controls {
   position: sticky; bottom: 0; margin-top: 14px; padding: 12px 0 28px;
   background: linear-gradient(180deg, rgba(46, 66, 57, 0), rgba(46, 66, 57, 0.94) 22%, var(--board));

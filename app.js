@@ -26,6 +26,7 @@
     scrollPending: true,
     toast: "",
     popSlot: -1,
+    busy: false,
     played: 0,
     won: 0
   };
@@ -265,6 +266,7 @@
       b.title = c.name;
       b.setAttribute("aria-label", c.name);
       b.setAttribute("data-color", String(c.id));
+      b.disabled = state.busy;
       b.addEventListener("click", function () {
         var filledIndex = state.selected;
         state.input[filledIndex] = c.id;
@@ -281,13 +283,14 @@
     var submit = el("button", "btn", "Hádat");
     submit.type = "button";
     submit.setAttribute("data-action", "submit");
-    submit.disabled = state.input.indexOf(null) !== -1;
+    submit.disabled = state.busy || state.input.indexOf(null) !== -1;
     submit.addEventListener("click", submitGuess);
     actions.appendChild(submit);
 
     var reset = el("button", "btn ghost", "Smazat");
     reset.type = "button";
     reset.setAttribute("data-action", "clear");
+    reset.disabled = state.busy;
     reset.addEventListener("click", function () {
       state.input = emptyInput();
       state.selected = 0;
@@ -353,14 +356,60 @@
     }
   }
 
-  function submitGuess() {
-    if (state.status !== "playing") return;
-    if (state.input.indexOf(null) !== -1) return;
-    var feedback = computeFeedback(state.secret, state.input);
-    state.guesses.push({ guess: state.input.slice(), whites: feedback.whites, blacks: feedback.blacks });
+  function showEvaluation(guess, feedback, done) {
+    var overlay = el("div", "overlay");
+    var card = el("div", "eval-card");
+
+    var title = "Vyhodnocení";
+    if (feedback.whites === CODE_LENGTH) title = "Správně!";
+    else if (feedback.whites + feedback.blacks === 0) title = "Nic nesedí";
+    card.appendChild(el("div", "eval-title", title));
+
+    var slots = el("div", "slots eval-slots");
+    for (var i = 0; i < CODE_LENGTH; i++) slots.appendChild(paint(el("div", "slot"), guess[i]));
+    card.appendChild(slots);
+
+    var fbWrap = el("div", "eval-fb");
+    var pegs = [];
+    var w;
+    for (w = 0; w < feedback.whites; w++) {
+      var pw = el("div", "fb-peg white");
+      fbWrap.appendChild(pw);
+      pegs.push(pw);
+    }
+    for (var b = 0; b < feedback.blacks; b++) {
+      var pb = el("div", "fb-peg black");
+      fbWrap.appendChild(pb);
+      pegs.push(pb);
+    }
+    if (pegs.length === 0) fbWrap.appendChild(el("div", "eval-none", "žádná shoda"));
+    card.appendChild(fbWrap);
+
+    var counts = el("div", "eval-counts", feedback.whites + "× bílá · " + feedback.blacks + "× černá");
+    card.appendChild(counts);
+
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    var step = 180;
+    pegs.forEach(function (peg, idx) {
+      setTimeout(function () { peg.classList.add("shown"); }, step * (idx + 1));
+    });
+    var revealDone = step * (pegs.length + 1);
+    setTimeout(function () { counts.classList.add("shown"); }, revealDone);
+    setTimeout(function () {
+      overlay.classList.add("closing");
+      setTimeout(function () {
+        overlay.remove();
+        done();
+      }, 200);
+    }, revealDone + 650);
+  }
+
+  function commitGuess(guess, feedback) {
+    state.guesses.push({ guess: guess, whites: feedback.whites, blacks: feedback.blacks });
     state.input = emptyInput();
     state.selected = 0;
-
     if (feedback.whites === CODE_LENGTH) {
       state.status = "won";
       state.played++;
@@ -371,6 +420,19 @@
     }
     save();
     render();
+  }
+
+  function submitGuess() {
+    if (state.status !== "playing" || state.busy) return;
+    if (state.input.indexOf(null) !== -1) return;
+    var guess = state.input.slice();
+    var feedback = computeFeedback(state.secret, guess);
+    state.busy = true;
+    render();
+    showEvaluation(guess, feedback, function () {
+      state.busy = false;
+      commitGuess(guess, feedback);
+    });
   }
 
   function newGame() {
