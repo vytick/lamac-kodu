@@ -13,6 +13,7 @@
   ];
   var CODE_LENGTH = 5;
   var MAX_GUESSES = 12;
+  var STORAGE_KEY = "lamac-kodu:v1";
 
   var state = {
     secret: [],
@@ -47,6 +48,49 @@
     var arr = [];
     for (var i = 0; i < CODE_LENGTH; i++) arr.push(null);
     return arr;
+  }
+
+  function isColorId(value) {
+    return typeof value === "number" && value >= 0 && value < COLORS.length;
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        secret: state.secret,
+        guesses: state.guesses,
+        status: state.status,
+        celebrated: state.celebrated,
+        played: state.played,
+        won: state.won
+      }));
+    } catch (e) {}
+  }
+
+  function restore() {
+    var raw;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return false; }
+    if (!raw) return false;
+    var data;
+    try { data = JSON.parse(raw); } catch (e) { return false; }
+    if (!data || !Array.isArray(data.secret) || data.secret.length !== CODE_LENGTH) return false;
+    if (!data.secret.every(isColorId)) return false;
+    if (!Array.isArray(data.guesses)) return false;
+    var guesses = [];
+    for (var i = 0; i < data.guesses.length; i++) {
+      var g = data.guesses[i];
+      if (!g || !Array.isArray(g.guess) || g.guess.length !== CODE_LENGTH || !g.guess.every(isColorId)) return false;
+      guesses.push({ guess: g.guess.slice(), whites: Number(g.whites) || 0, blacks: Number(g.blacks) || 0 });
+    }
+    state.secret = data.secret.slice();
+    state.guesses = guesses;
+    state.status = data.status === "won" || data.status === "lost" ? data.status : "playing";
+    state.celebrated = !!data.celebrated;
+    state.played = Number(data.played) || 0;
+    state.won = Number(data.won) || 0;
+    state.lastGuessCount = guesses.length;
+    state.scrollPending = true;
+    return true;
   }
 
   function randomInt(max) {
@@ -289,6 +333,7 @@
 
     if (state.status === "won" && !state.celebrated) {
       state.celebrated = true;
+      save();
       celebrate();
     }
   }
@@ -309,6 +354,7 @@
       state.status = "lost";
       state.played++;
     }
+    save();
     render();
   }
 
@@ -322,6 +368,7 @@
     state.lastGuessCount = 0;
     state.scrollPending = true;
     state.toast = "";
+    save();
     render();
   }
 
@@ -335,5 +382,6 @@
     };
   }
 
-  newGame();
+  if (restore()) render();
+  else newGame();
 })();
