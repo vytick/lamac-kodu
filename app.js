@@ -395,19 +395,20 @@
     overlay.appendChild(card);
     document.body.appendChild(overlay);
 
-    var step = 4500;
+    var TOTAL = 5000;
+    var stagger = pegs.length ? Math.min(650, Math.round((TOTAL * 0.55) / pegs.length)) : 0;
     pegs.forEach(function (peg, idx) {
-      setTimeout(function () { peg.classList.add("shown"); }, step * (idx + 1));
+      setTimeout(function () { peg.classList.add("shown"); }, 400 + stagger * idx);
     });
-    var revealDone = step * (pegs.length + 1);
-    setTimeout(function () { counts.classList.add("shown"); }, revealDone);
+    var revealDone = 400 + stagger * pegs.length;
+    setTimeout(function () { counts.classList.add("shown"); }, revealDone + 200);
     setTimeout(function () {
       overlay.classList.add("closing");
       setTimeout(function () {
         overlay.remove();
         done();
       }, 200);
-    }, revealDone + 650);
+    }, TOTAL);
   }
 
   function commitGuess(guess, feedback) {
