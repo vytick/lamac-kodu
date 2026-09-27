@@ -2,8 +2,8 @@
   --board: #2e4239;
   --chalk: #f5f7ef;
   --chalk-2: rgba(245, 247, 239, 0.72);
-  --chalk-3: rgba(245, 247, 239, 0.4);
-  --chalk-line: rgba(245, 247, 239, 0.82);
+  --chalk-line: rgba(245, 247, 239, 0.7);
+  --chalk-dash: rgba(245, 247, 239, 0.26);
   --wood: #7a5230;
   --yellow: #ffe066;
   --ink: #20302a;
@@ -33,7 +33,7 @@ body::before {
 }
 body::after {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 40;
-  border: 14px solid var(--wood);
+  border: 9px solid var(--wood);
   border-radius: 4px;
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(0, 0, 0, 0.4), inset 0 0 46px rgba(0, 0, 0, 0.45);
 }
@@ -49,7 +49,7 @@ button { font-family: inherit; }
 .brand .logo { display: flex; gap: 4px; }
 .brand .logo i {
   width: 13px; height: 13px; border-radius: 50%; display: block;
-  border: 2px solid var(--chalk);
+  border: 1.5px solid var(--chalk);
   box-shadow: inset -2px -3px 0 rgba(0, 0, 0, 0.3);
   animation: bob 1.7s ease-in-out infinite;
 }
@@ -74,7 +74,7 @@ button { font-family: inherit; }
 .status-pill {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   padding: 12px 16px; font-weight: 700; font-size: 16px; margin-bottom: 14px; text-align: center;
-  border: 3px solid var(--chalk);
+  border: 2px solid var(--chalk);
   border-radius: 999px;
 }
 .status-pill.playing { background: rgba(255, 255, 255, 0.05); }
@@ -86,7 +86,7 @@ button { font-family: inherit; }
 .row {
   display: flex; align-items: center; gap: 9px;
   padding: 7px 9px;
-  border: 3px solid var(--chalk-line);
+  border: 2px solid var(--chalk-line);
   border-radius: 15px 7px 16px 8px / 8px 16px 7px 15px;
   background: rgba(255, 255, 255, 0.03);
 }
@@ -103,7 +103,7 @@ button { font-family: inherit; }
 .slots { display: flex; gap: 6px; }
 .slot {
   width: 33px; height: 33px; border-radius: 50%;
-  border: 3px dashed var(--chalk-3); background: transparent;
+  border: 2px dashed var(--chalk-dash); background: transparent;
   flex: 0 0 auto;
 }
 .row.current .slot { width: 38px; height: 38px; cursor: pointer; border-color: var(--chalk-2); }
@@ -115,10 +115,10 @@ button { font-family: inherit; }
 }
 .slot.selected { border-color: var(--yellow); box-shadow: 0 0 0 4px rgba(255, 224, 102, 0.35); }
 .fb { display: grid; grid-template-columns: repeat(3, 14px); grid-auto-rows: 14px; gap: 4px; margin-left: auto; }
-.fb-peg { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--chalk); }
+.fb-peg { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--chalk); }
 .fb-peg.white { background: var(--chalk); }
 .fb-peg.black { background: #16231d; }
-.fb-empty { width: 14px; height: 14px; border-radius: 50%; border: 2px dashed var(--chalk-3); }
+.fb-empty { width: 14px; height: 14px; border-radius: 50%; border: 1.5px dashed var(--chalk-dash); }
 
 .overlay {
   position: fixed; inset: 0; z-index: 70;
@@ -133,7 +133,7 @@ button { font-family: inherit; }
 @keyframes fade-out { to { opacity: 0; } }
 .eval-card {
   background: var(--board);
-  border: 3px solid var(--chalk);
+  border: 2px solid var(--chalk);
   border-radius: 20px 9px 22px 10px / 10px 22px 9px 20px;
   padding: 22px 26px 20px;
   text-align: center;
@@ -158,7 +158,7 @@ button { font-family: inherit; }
 }
 .eval-counts .eval-count::before {
   content: ""; display: inline-block; width: 9px; height: 9px;
-  border-radius: 50%; border: 2px solid var(--chalk); margin-right: 7px;
+  border-radius: 50%;   border: 1.5px solid var(--chalk); margin-right: 7px;
   vertical-align: middle;
 }
 .eval-counts .eval-count:nth-child(1)::before { background: var(--chalk); }
@@ -168,7 +168,7 @@ button { font-family: inherit; }
 .controls {
   position: sticky; bottom: 0; margin-top: 14px; padding: 12px 0 28px;
   background: var(--board);
-  border-top: 3px solid var(--chalk-line);
+  border-top: 2px solid var(--chalk-line);
   box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.45);
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
@@ -177,7 +177,7 @@ button { font-family: inherit; }
 }
 .palette { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 14px; }
 .swatch {
-  width: 50px; height: 50px; border-radius: 50%; border: 3px solid var(--chalk);
+  width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--chalk);
   cursor: pointer; padding: 0;
   background-image: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 48%),
     radial-gradient(circle at 72% 80%, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0) 56%);
@@ -187,7 +187,7 @@ button { font-family: inherit; }
 .swatch:active { transform: scale(.9) rotate(-6deg); }
 .legend { display: flex; gap: 16px; justify-content: center; font-size: 12.5px; color: var(--chalk-2); margin-top: 10px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend i { width: 12px; height: 12px; border-radius: 50%; display: block; border: 2px solid var(--chalk); }
+.legend i { width: 12px; height: 12px; border-radius: 50%; display: block; border: 1.5px solid var(--chalk); }
 .legend i.w { background: var(--chalk); }
 .legend i.b { background: #16231d; }
 
@@ -195,7 +195,7 @@ button { font-family: inherit; }
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 12px 18px; font-size: 17px; font-weight: 700; font-family: inherit;
   color: var(--ink); background: var(--yellow);
-  border: 3px solid var(--chalk);
+  border: 2px solid var(--chalk);
   border-radius: 14px 6px 16px 7px / 7px 16px 6px 14px;
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.35);
   cursor: pointer; text-align: center;
@@ -216,7 +216,7 @@ button { font-family: inherit; }
   position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%);
   background: #ff6b7f; color: var(--ink); font-weight: 700; font-size: 14.5px;
   padding: 12px 18px; border-radius: 14px 6px 15px 7px / 7px 15px 6px 14px;
-  border: 3px solid var(--chalk); box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--chalk); box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.4);
   z-index: 50; animation: pop .18s ease;
 }
 
@@ -225,26 +225,11 @@ button { font-family: inherit; }
 @keyframes fall { to { transform: translateY(112vh) rotate(720deg); opacity: .85; } }
 
 @media (max-width: 480px) {
-  :root {
-    --chalk-line: rgba(245, 247, 239, 0.7);
-    --chalk-dash: rgba(245, 247, 239, 0.26);
-  }
-  body::after { border-width: 9px; }
   .topbar { padding: 18px 14px 10px; }
   .screen { padding: 12px 14px 40px; }
-  .status-pill { border-width: 2px; padding: 10px 14px; font-size: 15px; }
-  .row { border-width: 2px; padding: 6px 8px; }
-  .controls { border-top-width: 2px; }
+  .status-pill { padding: 10px 14px; font-size: 15px; }
+  .row { padding: 6px 8px; }
   .row.current .slot { width: 36px; height: 36px; }
-  .slot { border-width: 2px; border-color: var(--chalk-dash); }
-  .row.current .slot { border-color: var(--chalk-2); }
-  .fb-peg { border-width: 1.5px; }
-  .fb-empty { border-width: 1.5px; border-color: var(--chalk-dash); }
-  .eval-card { border-width: 2px; }
-  .swatch { border-width: 2px; width: 46px; height: 46px; }
-  .btn { border-width: 2px; padding: 11px 16px; font-size: 16px; }
-  .legend i { border-width: 1.5px; }
-  .eval-counts .eval-count::before { border-width: 1.5px; }
-  .toast { border-width: 2px; }
-  .brand .logo i { border-width: 1.5px; }
+  .swatch { width: 46px; height: 46px; }
+  .btn { padding: 11px 16px; font-size: 16px; }
 }
