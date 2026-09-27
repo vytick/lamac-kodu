@@ -95,13 +95,11 @@ button { font-family: inherit; }
 @keyframes wiggle { 0% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } 100% { transform: rotate(0); } }
 .row.won { background: rgba(52, 211, 153, 0.16); }
 .row.lost { background: rgba(255, 107, 127, 0.14); }
-@keyframes plop {
-  0% { transform: scale(.35); }
-  55% { transform: scale(1.18); }
-  75% { transform: scale(.94); }
-  100% { transform: scale(1); }
+@keyframes pop-in {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
 }
-.slot.plop { animation: plop .32s cubic-bezier(.2, .9, .3, 1.3); }
+.slot.plop { animation: pop-in .2s ease-out; }
 .row-num { width: 16px; text-align: center; font-size: 12.5px; color: var(--chalk-2); }
 .slots { display: flex; gap: 6px; }
 .slot {

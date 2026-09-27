@@ -217,7 +217,6 @@
     slot.addEventListener("click", function () {
       if (state.input[i] !== null) state.input[i] = null;
       state.selected = i;
-      pop(i);
       render();
     });
     return slot;
