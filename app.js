@@ -18,7 +18,7 @@
   var state = {
     secret: [],
     guesses: [],
-    input: [],
+    input: emptyInput(),
     selected: 0,
     status: "playing",
     celebrated: false,
@@ -85,6 +85,8 @@
     }
     state.secret = data.secret.slice();
     state.guesses = guesses;
+    state.input = emptyInput();
+    state.selected = 0;
     state.status = data.status === "won" || data.status === "lost" ? data.status : "playing";
     state.celebrated = !!data.celebrated;
     state.played = Number(data.played) || 0;
