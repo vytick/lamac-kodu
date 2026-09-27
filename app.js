@@ -2,13 +2,13 @@
   "use strict";
 
   var COLORS = [
-    { id: 0, name: "Červená", hex: "#e11d48" },
-    { id: 1, name: "Oranžová", hex: "#f97316" },
+    { id: 0, name: "Černá", hex: "#1c1c1c" },
+    { id: 1, name: "Bílá", hex: "#f8fafc" },
     { id: 2, name: "Žlutá", hex: "#facc15" },
     { id: 3, name: "Zelená", hex: "#22c55e" },
-    { id: 4, name: "Tyrkysová", hex: "#0d9488" },
-    { id: 5, name: "Modrá", hex: "#2563eb" },
-    { id: 6, name: "Fialová", hex: "#9333ea" },
+    { id: 4, name: "Modrá", hex: "#2563eb" },
+    { id: 5, name: "Červená", hex: "#e11d48" },
+    { id: 6, name: "Oranžová", hex: "#f97316" },
     { id: 7, name: "Růžová", hex: "#f472b6" }
   ];
   var CODE_LENGTH = 5;
