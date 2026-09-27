@@ -153,7 +153,15 @@ button { font-family: inherit; }
 .eval-counts {
   margin-top: 16px; font-size: 13.5px; color: var(--chalk-2);
   opacity: 0; transition: opacity .25s ease;
+  display: flex; flex-direction: column; gap: 4px;
 }
+.eval-counts .eval-count::before {
+  content: ""; display: inline-block; width: 9px; height: 9px;
+  border-radius: 50%; border: 2px solid var(--chalk); margin-right: 7px;
+  vertical-align: middle;
+}
+.eval-counts .eval-count:nth-child(1)::before { background: var(--chalk); }
+.eval-counts .eval-count:nth-child(2)::before { background: #16231d; }
 .eval-counts.shown { opacity: 1; }
 
 .controls {

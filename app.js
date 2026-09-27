@@ -389,7 +389,9 @@
     if (pegs.length === 0) fbWrap.appendChild(el("div", "eval-none", "žádná shoda"));
     card.appendChild(fbWrap);
 
-    var counts = el("div", "eval-counts", feedback.whites + "× bílá · " + feedback.blacks + "× černá");
+    var counts = el("div", "eval-counts");
+    counts.appendChild(el("span", "eval-count", feedback.whites + "× správná barva i pozice"));
+    counts.appendChild(el("span", "eval-count", feedback.blacks + "× správná barva, špatná pozice"));
     card.appendChild(counts);
 
     overlay.appendChild(card);
