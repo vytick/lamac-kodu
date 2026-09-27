@@ -1,0 +1,339 @@
+(function () {
+  "use strict";
+
+  var COLORS = [
+    { id: 0, name: "Červená", hex: "#ff4d6d" },
+    { id: 1, name: "Modrá", hex: "#3d8bfd" },
+    { id: 2, name: "Zelená", hex: "#34d399" },
+    { id: 3, name: "Žlutá", hex: "#ffd60a" },
+    { id: 4, name: "Oranžová", hex: "#ff8c42" },
+    { id: 5, name: "Fialová", hex: "#b15cff" },
+    { id: 6, name: "Tyrkysová", hex: "#22d3ee" },
+    { id: 7, name: "Růžová", hex: "#ff7ab6" }
+  ];
+  var CODE_LENGTH = 5;
+  var MAX_GUESSES = 12;
+
+  var state = {
+    secret: [],
+    guesses: [],
+    input: [],
+    selected: 0,
+    status: "playing",
+    celebrated: false,
+    lastGuessCount: 0,
+    scrollPending: true,
+    toast: "",
+    played: 0,
+    won: 0
+  };
+  var toastTimer = null;
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function colorById(id) {
+    for (var i = 0; i < COLORS.length; i++) {
+      if (COLORS[i].id === id) return COLORS[i];
+    }
+    return null;
+  }
+
+  function emptyInput() {
+    var arr = [];
+    for (var i = 0; i < CODE_LENGTH; i++) arr.push(null);
+    return arr;
+  }
+
+  function randomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
+
+  function generateSecret() {
+    var pool = COLORS.map(function (c) { return c.id; });
+    for (var i = pool.length - 1; i > 0; i--) {
+      var j = randomInt(i + 1);
+      var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+    }
+    return pool.slice(0, CODE_LENGTH);
+  }
+
+  function computeFeedback(secret, guess) {
+    var secretCounts = {}, guessCounts = {};
+    COLORS.forEach(function (c) { secretCounts[c.id] = 0; guessCounts[c.id] = 0; });
+    var whites = 0;
+    for (var i = 0; i < CODE_LENGTH; i++) {
+      if (secret[i] === guess[i]) whites++;
+      secretCounts[secret[i]]++;
+      guessCounts[guess[i]]++;
+    }
+    var total = 0;
+    COLORS.forEach(function (c) { total += Math.min(secretCounts[c.id], guessCounts[c.id]); });
+    return { whites: whites, blacks: total - whites };
+  }
+
+  function paint(node, colorId) {
+    if (colorId === null || colorId === undefined) return node;
+    node.classList.add("filled");
+    node.style.backgroundColor = colorById(colorId).hex;
+    return node;
+  }
+
+  function celebrate() {
+    var box = el("div", "confetti");
+    for (var i = 0; i < 60; i++) {
+      var piece = el("i");
+      piece.style.left = Math.random() * 100 + "%";
+      piece.style.background = COLORS[randomInt(COLORS.length)].hex;
+      piece.style.animationDuration = 1.1 + Math.random() * 0.9 + "s";
+      piece.style.animationDelay = Math.random() * 0.35 + "s";
+      piece.style.width = 7 + Math.random() * 8 + "px";
+      piece.style.height = 10 + Math.random() * 8 + "px";
+      box.appendChild(piece);
+    }
+    document.body.appendChild(box);
+    setTimeout(function () { box.remove(); }, 2600);
+  }
+
+  function showToast(text) {
+    state.toast = text;
+    render();
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      state.toast = "";
+      render();
+    }, 2600);
+  }
+
+  function feedbackGrid(whites, blacks) {
+    var grid = el("div", "fb");
+    var total = 0;
+    for (var w = 0; w < whites && total < CODE_LENGTH; w++, total++) grid.appendChild(el("div", "fb-peg white"));
+    for (var b = 0; b < blacks && total < CODE_LENGTH; b++, total++) grid.appendChild(el("div", "fb-peg black"));
+    while (total < CODE_LENGTH) { grid.appendChild(el("div", "fb-empty")); total++; }
+    return grid;
+  }
+
+  function formatSecret(secret) {
+    return secret.map(function (id) { return colorById(id).name; }).join(", ");
+  }
+
+  function renderStatus() {
+    if (state.status === "won") {
+      return el("div", "status-pill won", "Vyhrál jsi! Uhodl jsi za " + state.guesses.length + " pokusů.");
+    }
+    if (state.status === "lost") {
+      return el("div", "status-pill lost", "Prohrál jsi. Kód byl " + formatSecret(state.secret) + ".");
+    }
+    return el("div", "status-pill playing", "Hádej kód — pokus " + (state.guesses.length + 1) + " z " + MAX_GUESSES);
+  }
+
+  function renderStats() {
+    var wrap = el("div", "stats");
+    wrap.appendChild(el("span", null, "Odehráno: "));
+    wrap.appendChild(el("b", null, String(state.played)));
+    wrap.appendChild(el("span", null, "Vyhráno: "));
+    wrap.appendChild(el("b", null, String(state.won)));
+    return wrap;
+  }
+
+  function renderReveal() {
+    var wrap = el("div", "reveal");
+    wrap.appendChild(el("span", "label", "tajný kód"));
+    var slots = el("div", "slots");
+    for (var i = 0; i < state.secret.length; i++) slots.appendChild(paint(el("div", "slot"), state.secret[i]));
+    wrap.appendChild(slots);
+    return wrap;
+  }
+
+  function makeInputSlot(i) {
+    var slot = paint(el("div", "slot"), state.input[i]);
+    if (state.selected === i) slot.classList.add("selected");
+    slot.setAttribute("data-slot", String(i));
+    slot.setAttribute("role", "button");
+    slot.setAttribute("tabindex", "0");
+    slot.setAttribute("aria-label", "pozice " + (i + 1));
+    slot.addEventListener("click", function () {
+      if (state.input[i] !== null) state.input[i] = null;
+      state.selected = i;
+      render();
+    });
+    return slot;
+  }
+
+  function renderBoard() {
+    var board = el("div", "board");
+    for (var i = 0; i < MAX_GUESSES; i++) {
+      var row = el("div", "row");
+      row.setAttribute("data-row", String(i));
+      row.appendChild(el("div", "row-num", String(i + 1)));
+      var slots = el("div", "slots");
+
+      if (i < state.guesses.length) {
+        var g = state.guesses[i];
+        for (var s = 0; s < g.guess.length; s++) slots.appendChild(paint(el("div", "slot"), g.guess[s]));
+        row.appendChild(slots);
+        row.appendChild(feedbackGrid(g.whites, g.blacks));
+        if (state.status !== "playing" && i === state.guesses.length - 1) {
+          row.classList.add(state.status === "won" ? "won" : "lost");
+        }
+      } else {
+        for (var e = 0; e < CODE_LENGTH; e++) slots.appendChild(el("div", "slot"));
+        row.appendChild(slots);
+        row.appendChild(el("div", "fb"));
+      }
+
+      if (state.status === "playing" && i === state.guesses.length) {
+        row.classList.add("current");
+        slots.textContent = "";
+        for (var k = 0; k < CODE_LENGTH; k++) slots.appendChild(makeInputSlot(k));
+      }
+      board.appendChild(row);
+    }
+    return board;
+  }
+
+  function renderControls() {
+    var controls = el("div", "controls");
+
+    var palette = el("div", "palette");
+    COLORS.forEach(function (c) {
+      var b = el("button", "swatch");
+      b.type = "button";
+      b.style.backgroundColor = c.hex;
+      b.title = c.name;
+      b.setAttribute("aria-label", c.name);
+      b.setAttribute("data-color", String(c.id));
+      b.addEventListener("click", function () {
+        state.input[state.selected] = c.id;
+        var next = state.input.indexOf(null);
+        state.selected = next === -1 ? state.selected : next;
+        render();
+      });
+      palette.appendChild(b);
+    });
+    controls.appendChild(palette);
+
+    var actions = el("div", "btn-row");
+    var submit = el("button", "btn", "Hádat");
+    submit.type = "button";
+    submit.setAttribute("data-action", "submit");
+    submit.disabled = state.input.indexOf(null) !== -1;
+    submit.addEventListener("click", submitGuess);
+    actions.appendChild(submit);
+
+    var reset = el("button", "btn ghost", "Smazat");
+    reset.type = "button";
+    reset.setAttribute("data-action", "clear");
+    reset.addEventListener("click", function () {
+      state.input = emptyInput();
+      state.selected = 0;
+      render();
+    });
+    actions.appendChild(reset);
+    controls.appendChild(actions);
+
+    var legend = el("div", "legend");
+    var w = el("span");
+    w.appendChild(el("i", "w"));
+    w.appendChild(el("span", null, "bílá = barva i pozice"));
+    legend.appendChild(w);
+    var b = el("span");
+    b.appendChild(el("i", "b"));
+    b.appendChild(el("span", null, "černá = jen barva"));
+    legend.appendChild(b);
+    controls.appendChild(legend);
+
+    return controls;
+  }
+
+  function render() {
+    var root = document.getElementById("game-root");
+    root.textContent = "";
+
+    root.appendChild(renderStats());
+
+    var status = renderStatus();
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    root.appendChild(status);
+
+    if (state.status !== "playing") root.appendChild(renderReveal());
+
+    root.appendChild(renderBoard());
+
+    if (state.guesses.length !== state.lastGuessCount) {
+      state.lastGuessCount = state.guesses.length;
+      state.scrollPending = true;
+    }
+    if (state.scrollPending) {
+      var current = root.querySelector(".row.current");
+      if (current) current.scrollIntoView({ block: "center" });
+      state.scrollPending = false;
+    }
+
+    if (state.status === "playing") {
+      root.appendChild(renderControls());
+    } else {
+      var again = el("button", "btn block", "Hrát znovu");
+      again.type = "button";
+      again.addEventListener("click", newGame);
+      root.appendChild(again);
+    }
+
+    if (state.toast) root.appendChild(el("div", "toast", state.toast));
+
+    if (state.status === "won" && !state.celebrated) {
+      state.celebrated = true;
+      celebrate();
+    }
+  }
+
+  function submitGuess() {
+    if (state.status !== "playing") return;
+    if (state.input.indexOf(null) !== -1) return;
+    var feedback = computeFeedback(state.secret, state.input);
+    state.guesses.push({ guess: state.input.slice(), whites: feedback.whites, blacks: feedback.blacks });
+    state.input = emptyInput();
+    state.selected = 0;
+
+    if (feedback.whites === CODE_LENGTH) {
+      state.status = "won";
+      state.played++;
+      state.won++;
+    } else if (state.guesses.length >= MAX_GUESSES) {
+      state.status = "lost";
+      state.played++;
+    }
+    render();
+  }
+
+  function newGame() {
+    state.secret = generateSecret();
+    state.guesses = [];
+    state.input = emptyInput();
+    state.selected = 0;
+    state.status = "playing";
+    state.celebrated = false;
+    state.lastGuessCount = 0;
+    state.scrollPending = true;
+    state.toast = "";
+    render();
+  }
+
+  document.getElementById("new-game").addEventListener("click", newGame);
+
+  if (/[?&]debug\b/.test(location.search)) {
+    window.__lamac = {
+      getSecret: function () { return state.secret.slice(); },
+      getStatus: function () { return state.status; },
+      newGame: newGame
+    };
+  }
+
+  newGame();
+})();
