@@ -12,6 +12,7 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { -webkit-text-size-adjust: 100%; }
 html, body { margin: 0; padding: 0; }
+body { overflow-x: hidden; }
 body {
   font-family: "Chalkboard SE", "Chalkboard", "Comic Sans MS", "Marker Felt", ui-rounded, cursive;
   font-weight: 600;
@@ -169,6 +170,10 @@ button { font-family: inherit; }
   background: var(--board);
   border-top: 3px solid var(--chalk-line);
   box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.45);
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: calc(50vw - 50%);
+  padding-right: calc(50vw - 50%);
 }
 .palette { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 14px; }
 .swatch {
