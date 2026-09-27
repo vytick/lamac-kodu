@@ -19,7 +19,7 @@
     secret: [],
     guesses: [],
     input: [],
-    selected: -1,
+    selected: 0,
     status: "playing",
     celebrated: false,
     lastGuessCount: 0,
@@ -293,7 +293,7 @@
     reset.disabled = state.busy;
     reset.addEventListener("click", function () {
       state.input = emptyInput();
-      state.selected = -1;
+      state.selected = 0;
       render();
     });
     actions.appendChild(reset);
@@ -411,7 +411,7 @@
   function commitGuess(guess, feedback) {
     state.guesses.push({ guess: guess, whites: feedback.whites, blacks: feedback.blacks });
     state.input = emptyInput();
-    state.selected = -1;
+    state.selected = 0;
     if (feedback.whites === CODE_LENGTH) {
       state.status = "won";
       state.played++;
@@ -441,7 +441,7 @@
     state.secret = generateSecret();
     state.guesses = [];
     state.input = emptyInput();
-    state.selected = -1;
+    state.selected = 0;
     state.status = "playing";
     state.celebrated = false;
     state.lastGuessCount = 0;
