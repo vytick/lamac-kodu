@@ -395,7 +395,7 @@
     overlay.appendChild(card);
     document.body.appendChild(overlay);
 
-    var step = 900;
+    var step = 4500;
     pegs.forEach(function (peg, idx) {
       setTimeout(function () { peg.classList.add("shown"); }, step * (idx + 1));
     });
