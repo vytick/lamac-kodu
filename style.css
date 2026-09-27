@@ -146,7 +146,7 @@ button { font-family: inherit; }
 .eval-fb .fb-peg {
   width: 22px; height: 22px;
   opacity: 0; transform: scale(0);
-  transition: opacity .2s ease, transform .2s cubic-bezier(.2, .9, .3, 1.4);
+  transition: opacity .5s ease, transform .5s cubic-bezier(.2, .9, .3, 1.4);
 }
 .eval-fb .fb-peg.shown { opacity: 1; transform: scale(1); }
 .eval-none { font-size: 14px; color: var(--chalk-2); }
