@@ -212,6 +212,7 @@
     slot.setAttribute("tabindex", "0");
     slot.setAttribute("aria-label", "pozice " + (i + 1));
     slot.addEventListener("click", function () {
+      if (state.input.indexOf(null) !== -1) return;
       state.selected = i;
       render();
     });
@@ -263,15 +264,12 @@
       b.setAttribute("data-color", String(c.id));
       b.disabled = state.busy;
       b.addEventListener("click", function () {
-        var target = state.input.indexOf(null);
-        if (target === -1) {
-          if (state.selected === -1) return;
-          target = state.selected;
-          state.input[target] = c.id;
-        } else {
-          state.input[target] = c.id;
-          state.selected = state.input.indexOf(null);
-        }
+        var empty = state.input.indexOf(null);
+        var target = empty !== -1 ? empty : state.selected;
+        if (target === -1) return;
+        state.input[target] = c.id;
+        var next = state.input.indexOf(null);
+        state.selected = next === -1 ? target : next;
         render();
         pulseSlot(target);
       });
