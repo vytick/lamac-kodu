@@ -20,6 +20,7 @@
     guesses: [],
     input: emptyInput(),
     selected: 0,
+    hardSelect: false,
     status: "playing",
     celebrated: false,
     lastGuessCount: 0,
@@ -87,6 +88,7 @@
     state.guesses = guesses;
     state.input = emptyInput();
     state.selected = 0;
+    state.hardSelect = false;
     state.status = data.status === "won" || data.status === "lost" ? data.status : "playing";
     state.celebrated = !!data.celebrated;
     state.played = Number(data.played) || 0;
@@ -214,8 +216,8 @@
     slot.setAttribute("tabindex", "0");
     slot.setAttribute("aria-label", "pozice " + (i + 1));
     slot.addEventListener("click", function () {
-      if (state.input.indexOf(null) !== -1) return;
       state.selected = i;
+      state.hardSelect = state.input[i] !== null;
       render();
     });
     return slot;
@@ -266,10 +268,15 @@
       b.setAttribute("data-color", String(c.id));
       b.disabled = state.busy;
       b.addEventListener("click", function () {
-        var empty = state.input.indexOf(null);
-        var target = empty !== -1 ? empty : state.selected;
-        if (target === -1) return;
+        var target;
+        if (state.hardSelect) {
+          target = state.selected;
+        } else {
+          target = state.input.indexOf(null);
+          if (target === -1) return;
+        }
         state.input[target] = c.id;
+        state.hardSelect = false;
         var next = state.input.indexOf(null);
         state.selected = next === -1 ? target : next;
         render();
@@ -294,6 +301,7 @@
     reset.addEventListener("click", function () {
       state.input = emptyInput();
       state.selected = 0;
+      state.hardSelect = false;
       render();
     });
     actions.appendChild(reset);
@@ -412,6 +420,7 @@
     state.guesses.push({ guess: guess, whites: feedback.whites, blacks: feedback.blacks });
     state.input = emptyInput();
     state.selected = 0;
+    state.hardSelect = false;
     if (feedback.whites === CODE_LENGTH) {
       state.status = "won";
       state.played++;
@@ -442,6 +451,7 @@
     state.guesses = [];
     state.input = emptyInput();
     state.selected = 0;
+    state.hardSelect = false;
     state.status = "playing";
     state.celebrated = false;
     state.lastGuessCount = 0;
