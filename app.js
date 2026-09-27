@@ -2,14 +2,14 @@
   "use strict";
 
   var COLORS = [
-    { id: 0, name: "Červená", hex: "#ff4d6d" },
-    { id: 1, name: "Modrá", hex: "#3d8bfd" },
-    { id: 2, name: "Zelená", hex: "#34d399" },
-    { id: 3, name: "Žlutá", hex: "#ffd60a" },
-    { id: 4, name: "Oranžová", hex: "#ff8c42" },
-    { id: 5, name: "Fialová", hex: "#b15cff" },
-    { id: 6, name: "Tyrkysová", hex: "#22d3ee" },
-    { id: 7, name: "Růžová", hex: "#ff7ab6" }
+    { id: 0, name: "Červená", hex: "#e11d48" },
+    { id: 1, name: "Oranžová", hex: "#f97316" },
+    { id: 2, name: "Žlutá", hex: "#facc15" },
+    { id: 3, name: "Zelená", hex: "#22c55e" },
+    { id: 4, name: "Tyrkysová", hex: "#0d9488" },
+    { id: 5, name: "Modrá", hex: "#2563eb" },
+    { id: 6, name: "Fialová", hex: "#9333ea" },
+    { id: 7, name: "Růžová", hex: "#f472b6" }
   ];
   var CODE_LENGTH = 5;
   var MAX_GUESSES = 12;
@@ -25,6 +25,7 @@
     lastGuessCount: 0,
     scrollPending: true,
     toast: "",
+    popSlot: -1,
     played: 0,
     won: 0
   };
@@ -90,6 +91,7 @@
     state.won = Number(data.won) || 0;
     state.lastGuessCount = guesses.length;
     state.scrollPending = true;
+    state.popSlot = -1;
     return true;
   }
 
@@ -194,9 +196,20 @@
     return wrap;
   }
 
+  function pop(i) {
+    state.popSlot = i;
+    setTimeout(function () {
+      if (state.popSlot === i) {
+        state.popSlot = -1;
+        render();
+      }
+    }, 650);
+  }
+
   function makeInputSlot(i) {
     var slot = paint(el("div", "slot"), state.input[i]);
     if (state.selected === i) slot.classList.add("selected");
+    if (state.popSlot === i) slot.classList.add("plop");
     slot.setAttribute("data-slot", String(i));
     slot.setAttribute("role", "button");
     slot.setAttribute("tabindex", "0");
@@ -204,6 +217,7 @@
     slot.addEventListener("click", function () {
       if (state.input[i] !== null) state.input[i] = null;
       state.selected = i;
+      pop(i);
       render();
     });
     return slot;
@@ -253,9 +267,11 @@
       b.setAttribute("aria-label", c.name);
       b.setAttribute("data-color", String(c.id));
       b.addEventListener("click", function () {
-        state.input[state.selected] = c.id;
+        var filledIndex = state.selected;
+        state.input[filledIndex] = c.id;
         var next = state.input.indexOf(null);
         state.selected = next === -1 ? state.selected : next;
+        pop(filledIndex);
         render();
       });
       palette.appendChild(b);
@@ -368,6 +384,7 @@
     state.lastGuessCount = 0;
     state.scrollPending = true;
     state.toast = "";
+    state.popSlot = -1;
     save();
     render();
   }
