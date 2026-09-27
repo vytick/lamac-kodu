@@ -216,7 +216,6 @@
     slot.setAttribute("tabindex", "0");
     slot.setAttribute("aria-label", "pozice " + (i + 1));
     slot.addEventListener("click", function () {
-      if (state.input[i] !== null) state.input[i] = null;
       state.selected = i;
       render();
     });
@@ -268,8 +267,8 @@
       b.setAttribute("data-color", String(c.id));
       b.disabled = state.busy;
       b.addEventListener("click", function () {
-        var target = state.input.indexOf(null);
-        if (target === -1) target = state.selected;
+        var empty = state.input.indexOf(null);
+        var target = empty !== -1 ? empty : state.selected;
         state.input[target] = c.id;
         var next = state.input.indexOf(null);
         state.selected = next === -1 ? target : next;
