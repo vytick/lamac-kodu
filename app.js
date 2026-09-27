@@ -25,7 +25,6 @@
     lastGuessCount: 0,
     scrollPending: true,
     toast: "",
-    popSlot: -1,
     busy: false,
     played: 0,
     won: 0
@@ -92,7 +91,6 @@
     state.won = Number(data.won) || 0;
     state.lastGuessCount = guesses.length;
     state.scrollPending = true;
-    state.popSlot = -1;
     return true;
   }
 
@@ -197,20 +195,18 @@
     return wrap;
   }
 
-  function pop(i) {
-    state.popSlot = i;
-    setTimeout(function () {
-      if (state.popSlot === i) {
-        state.popSlot = -1;
-        render();
-      }
-    }, 650);
+  function pulseSlot(i) {
+    var slot = document.querySelector('.row.current [data-slot="' + i + '"]');
+    if (!slot) return;
+    slot.classList.add("plop");
+    slot.addEventListener("animationend", function () {
+      slot.classList.remove("plop");
+    });
   }
 
   function makeInputSlot(i) {
     var slot = paint(el("div", "slot"), state.input[i]);
     if (state.selected === i) slot.classList.add("selected");
-    if (state.popSlot === i) slot.classList.add("plop");
     slot.setAttribute("data-slot", String(i));
     slot.setAttribute("role", "button");
     slot.setAttribute("tabindex", "0");
@@ -276,8 +272,8 @@
           state.input[target] = c.id;
           state.selected = state.input.indexOf(null);
         }
-        pop(target);
         render();
+        pulseSlot(target);
       });
       palette.appendChild(b);
     });
@@ -451,7 +447,6 @@
     state.lastGuessCount = 0;
     state.scrollPending = true;
     state.toast = "";
-    state.popSlot = -1;
     save();
     render();
   }
