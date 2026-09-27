@@ -166,7 +166,9 @@ button { font-family: inherit; }
 
 .controls {
   position: sticky; bottom: 0; margin-top: 14px; padding: 12px 0 28px;
-  background: linear-gradient(180deg, rgba(46, 66, 57, 0), rgba(46, 66, 57, 0.94) 22%, var(--board));
+  background: var(--board);
+  border-top: 3px solid var(--chalk-line);
+  box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.45);
 }
 .palette { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 14px; }
 .swatch {
@@ -227,6 +229,7 @@ button { font-family: inherit; }
   .screen { padding: 12px 14px 40px; }
   .status-pill { border-width: 2px; padding: 10px 14px; font-size: 15px; }
   .row { border-width: 2px; padding: 6px 8px; }
+  .controls { border-top-width: 2px; }
   .row.current .slot { width: 36px; height: 36px; }
   .slot { border-width: 2px; border-color: var(--chalk-dash); }
   .row.current .slot { border-color: var(--chalk-2); }
